@@ -1,175 +1,188 @@
+/*jslint browser: true, forin: true, onevar: true, undef: true, nomen: true,
+         eqeqeq: true, bitwise: true, newcap: true, immed: true */
+/*global safari: false */
+
 ( function() {
-  var settings = {}, formatJSON = {
+  var settings = {}, extension = {
     /**
      * attempt to reformat the current document as JSON
      *  TODO: examine the document's content-type (appears to be impossible)
      */
     init: function() {
-      // attempt to parse the body as JSON
-      try {
-        var obj = JSON.parse( document.body.textContent
-          .split( "\\" ).join( "\\\\" ) // double-up on escape sequences
-          .split( '\\\"' ).join( "\\\\\"" ) // at this point quotes have been unescaped.  re-escape them.
-        );
-      } catch( e ) {
-        // invalid JSON :(
-        return;
+      var type = this.getDocumentType();
+window.name = "sadf";
+      this.pendingScriptCount = 0;
+
+      if( type && this.isTextDocument() ) {
+        // receive settings from proxy.html
+        safari.self.addEventListener( "message", function( e ) {
+          if( e.name === "setSettings" ) {
+            settings = e.message;
+
+            extension.highlight( type );
+          }
+        }, false );
+
+        // ask proxy.html for extension settings
+        safari.self.tab.dispatchMessage( "getSettings" );
+      }
+    },
+
+    /**
+     * determine the document type
+     */
+    getDocumentType: function() {
+      var parts = document.location.pathname.split( '/' ),
+          matches = parts[parts.length-1].match( /\.([^.]+)$/ ),
+          file_ext = matches ? matches[1].toLowerCase() : null;
+
+      switch( file_ext ) {
+        case "actionscript3":
+        case "applescript":
+        case "bash":
+        case "coldfusion":
+        case "cpp":
+        case "csharp":
+        case "css":
+        case "diff":
+        case "erlang":
+        case "groovy":
+        case "java":
+        case "javafx":
+        case "javascript":
+        case "pascal":
+        case "perl":
+        case "php":
+        case "plain":
+        case "powershell":
+        case "python":
+        case "ruby":
+        case "sass":
+        case "scala":
+        case "sql":
+        case "vb":
+        case "xml":
+          return file_ext;
+        default:
+          // map other file types to a supported type
+          return {
+            "as3": "actionscript3",
+            "c": "cpp",
+            "cf": "coldfusion",
+            "cs": "csharp",
+            "erl": "erlang",
+            "fx": "javafx",
+            "jfx": "javafx",
+            "js": "javascript",
+            "jscript": "javascript",
+            "json": "javascript",
+            "patch": "diff",
+            "pas": "pascal",
+            "php3": "php",
+            "pl": "perl",
+            "ps1": "powershell",
+            "py": "python",
+            "pyw": "python",
+            "rb": "ruby",
+            "rake": "ruby",
+            "scss": "sass",
+            "sh": "bash",
+            "txt": "plain",
+            "xslt": "xml"
+          }[file_ext];
+      }
+    },
+
+    /**
+     * syntax highlight the document
+     */
+    highlight: function( type ) {
+      var src_el = document.body.getElementsByTagName( "pre" )[0];
+      src_el.className = "brush: " + type;
+
+      this.injectCSS( "lib/SyntaxHighlighter/css/shCore.css" );
+      this.injectCSS( "lib/SyntaxHighlighter/css/shThemeEclipse.css" );
+
+      this.injectScript( "lib/SyntaxHighlighter/js/shCore.js", function() {
+        this.injectScript( "lib/SyntaxHighlighter/js/brushes/" + type + ".js", function() {
+          var opts = {
+            gutter: false,
+            toolbar: false
+          };
+
+          var script_el = document.createElement( "script" ),
+              src_el = document.body.getElementsByTagName( "pre" )[0];
+          script_el.type = "text/javascript";
+          script_el.innerHTML = 'SyntaxHighlighter.highlight(' + JSON.stringify( opts ) + ');';
+          document.body.insertBefore( script_el, src_el );
+        } );
+      } );
+    },
+
+    /**
+     * include an external css file in the page
+     */
+    injectCSS: function( href ) {
+      var link_el = document.createElement( "link" );
+      link_el.href = safari.extension.baseURI + href;
+      link_el.type = "text/css";
+      link_el.rel = "stylesheet";
+      document.body.appendChild( link_el );
+    },
+
+    /**
+     * include an external javascript file in the page
+     */
+    injectScript: function( src, onload ) {
+      var script_el = document.createElement( "script" ),
+          src_el = document.body.getElementsByTagName( "pre" )[0];
+
+      if( onload ) {
+        script_el.onload = ( function( context ) {
+          return function() {
+            onload.call( context );
+          };
+        }( this ) );
       }
 
-      // hide the unformatted JSON text
-      document.body.innerHTML = "";
+      script_el.src = safari.extension.baseURI + src;
+      script_el.type = "text/javascript";
 
-      // receive settings from proxy.html
-      safari.self.addEventListener( "message", function( e ) {
-        if( e.name === "setSettings" ) {
-          settings = e.message;
+      document.body.insertBefore( script_el, src_el );
+    },
 
-          // inject CSS
-          var style = formatJSON._html( '<style type="text/css"/>' );
-          style.innerHTML = settings.style;
-          document.body.appendChild( style );
+    /**
+     * test whether this document is text/plain
+     */
+    isTextDocument: function() {
+      // Safari doesn't give us access to the content-type header, so we'll
+      // check to see if the DOM matches Safari's standard DOM for text presentation.
+      return ! document.head &&
+        document.body && document.body.getElementsByTagName( "*" ).length === 1 &&
+        document.body.children[0].tagName.toLowerCase() === "pre";
+    },
 
-          // render formatted JSON
-          formatJSON._append( document.body, formatJSON.render( obj ) );
+    /**
+     * a mechanism for deferring until external scripts have loaded
+     */
+    onScriptsLoaded: (function() {
+      var callbacks = [];
+
+      return function( callback ) {
+        // registering a callback?
+        if( typeof callback === "function" ) {
+          callbacks.push( callback );
+        // handling a script load event?
+        } else if( --extension.pendingScriptCount === 0 ) {
+          for( var i = 0, ii = callbacks.length; i < ii; i++ ) {
+            callbacks[0].apply( extension );
+          }
+          callbacks = [];
         }
-      }, false );
-
-      // ask proxy.html for settings
-      safari.self.tab.dispatchMessage( "getSettings" );
-    },
-
-    /**
-     * append child nodes to a parent node
-     *  _append( <ul/>, <li/> ) => <ul><li/></ul>
-     *  _append( <ul/>, [<li/>, <li/>] ) => <ul><li/><li/></ul>
-     */
-    _append: function( parent, child ) {
-      if( this._typeof( child ) != "array" ) {
-        child = [child];
       }
-      for( var i = 0, ii = child.length; i < ii; i++ ) {
-        parent.appendChild( child[i] );
-      }
-      return parent;
-    },
-    
-    /**
-     * convert an html string into one or more nodes
-     *  _html( "<div/>" ) => <div/>
-     *  _html( "<div/>", "<div/>" ) => [<div/>, <div/>]
-     */
-    _html: function( str ) {
-      var nodes = [];
-
-      for( var i = 0, ii = arguments.length; i < ii; i++ ) {
-        if( this._typeof( arguments[i] ) == "string" ) {
-          var tmp = document.createElement( "div" );
-          tmp.innerHTML = arguments[i];
-          nodes = nodes.concat( Array.prototype.slice.call( tmp.childNodes ) );
-        } else {
-          nodes = nodes.concat( arguments[i] );
-        }
-      }
-      return nodes.length == 1 ? nodes[0] : nodes;
-    },
-
-    /**
-     * a slightly more informative "typeof"
-     *  _typeof( [] ) => "array"
-     *  _typeof( 1 ) => "number"
-     *  etc.
-     */
-    _typeof: function( obj ) {
-      if( obj === null ) {
-        return "null";
-      } else if( Object.prototype.toString.call( obj ) === "[object Array]" ) {
-        return "array";
-      } else {
-        return typeof obj;
-      }
-    },
-
-    /**
-     * render an array as HTML
-     *  renderArray( [] ) => Element
-     */
-    renderArray: function( a ) {
-      var list = this._html( "<ol/>" );
-      for( var i = 0, ii = a.length; i < ii; i++ ) {
-        this._append( list, this._append( this._html( "<li/>" ), this.render( a[i] ) ) );
-      }
-      return this._append(
-        this._html( '<div class="array"/>' ),
-          this._html(
-            '<span class="decorator">[</span>',
-            list.childNodes.length ? list : '',
-            '<span class="decorator">]</span>', '<span class="separator">,</span>'
-          )
-        );
-    },
-
-    /**
-     * render an object as HTML
-     *  renderObject( {} ) => Element
-     */
-    renderObject: function( obj ) {
-      var keys = [], list = this._html( "<dl/>" );
-
-      // gather keys for sorting
-      for( var i in obj ) {
-        keys.push( i );
-      }
-      if( settings.sort_keys ) {
-        keys = keys.sort();
-      }
-
-      for( var i = 0, ii = keys.length; i < ii; i++ ) {
-        this._append( list, this._append( this._html( "<dt/>" ), this._html( '<span class="decorator">"</span>', document.createTextNode( keys[i] ), '<span class="decorator">"</span>', '<span class="delimiter">:</span>' ) ) );
-        this._append( list, this._append( this._html( "<dd/>" ), this.render( obj[keys[i]] ) ) );
-      }
-
-      return this._append(
-        this._html( '<div class="object"/>' ),
-          this._html( '<span class="decorator">{</span>',
-            list.childNodes.length ? list : '',
-            '<span class="decorator">}</span>',
-            '<span class="separator">,</span>'
-          )
-        );
-    },
-
-    /**
-     * render a literal value as HTML
-     *  renderValue( "foo" ) => Element
-     */
-    renderValue: function( l, quote ) {
-      var val = document.createTextNode( l );
-      if( quote ) {
-        val = this._html( '<span class="decorator">"</span>', val, '<span class="decorator">"</span>' );
-      }
-      return this._append( this._append( this._html( '<span class="value"/>' ), val ), this._html( '<span class="separator">,</span>' ) );
-    },
-
-    /**
-     * render a javascript variable as HTML
-     *  render( foo ) => Element
-     */
-    render: function( obj ) {
-      var t = this._typeof( obj );
-      switch( t ) {
-        case "array":  return this.renderArray( obj );
-        case "object": return this.renderObject( obj );
-        case "boolean":
-        case "null":
-        case "number":
-        case "string":
-          var el = this.renderValue( obj, t == "string" );
-          el.className += " " + t;
-          return el;
-      }
-    }
+    }() )
   };
 
   // initialize!
-  formatJSON.init();
-}() )
+  extension.init();
+}() );

@@ -32,7 +32,7 @@
   float: none !important;
   height: auto !important;
   left: auto !important;
-  line-height: 1.1em !important;
+  line-height: inherit;
   margin: 0 !important;
   outline: 0 !important;
   overflow: visible !important;
@@ -44,20 +44,20 @@
   vertical-align: baseline !important;
   width: auto !important;
   box-sizing: content-box !important;
-  font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important;
+  font-family: monospace;
   font-weight: normal !important;
   font-style: normal !important;
-  font-size: 1em !important;
+  font-size: inherit !important;
   min-height: inherit !important;
   min-height: auto !important;
 }
 
 .syntaxhighlighter {
-  width: 100% !important;
-  margin: 1em 0 1em 0 !important;
-  position: relative !important;
-  overflow: auto !important;
-  font-size: 1em !important;
+/*  width: 100% !important;*/
+/*  margin: 1em 0 1em 0 !important;*/
+/*  position: relative !important;*/
+/*  overflow: auto !important;*/
+  font-size: inherit;
 }
 .syntaxhighlighter.source {
   overflow: hidden !important;
@@ -72,7 +72,8 @@
   white-space: pre !important;
 }
 .syntaxhighlighter table {
-  width: 100% !important;
+  font-size: inherit;
+/*  width: 100% !important;*/
 }
 .syntaxhighlighter table caption {
   text-align: left !important;
