@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
@@ -6,16 +7,17 @@
     <array>
       <dict>
         <key>CFBundleIdentifier</key>
-        <string>ch.flet.safari.jsonformatter</string>
+        <string>ch.flet.safari.syntaxhighlighter</string>
         <key>Developer Identifier</key>
         <string>7X732ETE87</string>
         <key>CFBundleVersion</key>
         <string>2</string>
         <key>CFBundleShortVersionString</key>
-        <string>1.0.1</string>
+        <string>1.0</string>
         <key>URL</key>
-        <string>http://github.com/downloads/rfletcher/safari-json-formatter/JSON_Formatter-1.0.1.safariextz</string>
+        <string>http://github.com/downloads/rfletcher/safari-syntax.highlighter/Syntax_Highlighter-1.0.safariextz</string>
       </dict>
     </array>
   </dict>
 </plist>
+-->

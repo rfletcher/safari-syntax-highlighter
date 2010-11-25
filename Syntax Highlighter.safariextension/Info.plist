@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Author</key>
+	<string>Rick Fletcher</string>
+	<key>CFBundleDisplayName</key>
+	<string>Syntax Highlighter</string>
+	<key>CFBundleIdentifier</key>
+	<string>ch.flet.safari.syntaxhighlighter</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.0</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>Chrome</key>
+	<dict>
+		<key>Global Page</key>
+		<string>proxy.html</string>
+	</dict>
+	<key>Content</key>
+	<dict>
+		<key>Scripts</key>
+		<dict>
+			<key>End</key>
+			<array>
+				<string>main.js</string>
+			</array>
+		</dict>
+	</dict>
+	<key>Description</key>
+	<string>Syntax highlighting and formatting for Safari</string>
+	<key>ExtensionInfoDictionaryVersion</key>
+	<string>1.0</string>
+	<key>Permissions</key>
+	<dict>
+		<key>Website Access</key>
+		<dict>
+			<key>Include Secure Pages</key>
+			<true/>
+			<key>Level</key>
+			<string>All</string>
+		</dict>
+	</dict>
+	<key>Update Manifest URL</key>
+	<string>https://github.com/rfletcher/safari-syntax-highlighter/raw/master/Update.plist</string>
+	<key>Website</key>
+	<string>http://github.com/rfletcher/safari-syntax-highlighter</string>
+</dict>
+</plist>
