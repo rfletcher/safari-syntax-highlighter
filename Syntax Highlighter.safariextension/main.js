@@ -12,17 +12,11 @@
       var type = this.getDocumentType();
 
       if( type && this.isTextDocument() ) {
-        // receive settings from proxy.html
-        safari.self.addEventListener( "message", function( e ) {
-          if( e.name === "setSettings" ) {
-            settings = e.message;
+        this.rpc( "getSettings", function( data ) {
+          settings = data;
 
-            extension.highlight( type );
-          }
-        }, false );
-
-        // ask proxy.html for extension settings
-        safari.self.tab.dispatchMessage( "getSettings" );
+          extension.highlight( type );
+        } );
       }
     },
 
@@ -168,6 +162,30 @@
       return ! document.head &&
         document.body && document.body.getElementsByTagName( "*" ).length === 1 &&
         document.body.children[0].tagName.toLowerCase() === "pre";
+    },
+
+    /**
+     * call one of the extension's "global page" methods
+     * usage:
+     *    rpc( "method", function(){} );
+     *    rpc( "method", "param1", ..., "paramN", function(){} );
+     */
+    rpc: function( method, callback ) {
+      callback = arguments[arguments.length - 1];
+
+      var params = Array.prototype.slice.call( arguments, 1, arguments.length - 1 ),
+
+      fn = function( e ) {
+        if( e.name === method ) {
+          callback.call( extension, e.message );
+          safari.self.removeEventListener( "message", callback );
+        }
+      };
+
+      // listen for the response
+      safari.self.addEventListener( "message", fn, false );
+      // call the method
+      safari.self.tab.dispatchMessage( method, params );
     }
   };
 

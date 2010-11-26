@@ -2,13 +2,22 @@
 <html lang="en">
 <head>
   <script type="text/javascript">
-    safari.application.addEventListener( "message", function( e ) {
-      if( e.name === "getSettings" ) {
-        e.target.page.dispatchMessage( "setSettings", {
-          sort_keys: safari.extension.settings.getItem( "sort_keys" ),
-          style: document.head.getElementsByTagName( 'style' )[0].textContent
-        } );
+    var RPC = {
+      /**
+       * get the extension's settings
+       */
+      getSettings: function() {
+        return {
+          sort_keys: safari.extension.settings.getItem( "sort_keys" )
+        };
       }
+    };
+
+    // listen for incoming messages and respond w/ calls to RPC methods
+    safari.application.addEventListener( "message", function( e ) {
+      if( RPC[e.name] ) {
+        e.target.page.dispatchMessage( e.name, RPC[e.name].apply( RPC, e.message ) );
+      };
     }, false );
   </script>
 </head>
