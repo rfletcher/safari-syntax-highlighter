@@ -11,8 +11,6 @@
     init: function() {
       var type = this.getDocumentType();
 
-      this.pendingScriptCount = 0;
-
       if( type && this.isTextDocument() ) {
         // receive settings from proxy.html
         safari.self.addEventListener( "message", function( e ) {
@@ -170,27 +168,7 @@
       return ! document.head &&
         document.body && document.body.getElementsByTagName( "*" ).length === 1 &&
         document.body.children[0].tagName.toLowerCase() === "pre";
-    },
-
-    /**
-     * a mechanism for deferring until external scripts have loaded
-     */
-    onScriptsLoaded: ( function() {
-      var callbacks = [];
-
-      return function( callback ) {
-        // registering a callback?
-        if( typeof callback === "function" ) {
-          callbacks.push( callback );
-        // handling a script load event?
-        } else if( --extension.pendingScriptCount === 0 ) {
-          for( var i = 0, ii = callbacks.length; i < ii; i++ ) {
-            callbacks[0].apply( extension );
-          }
-          callbacks = [];
-        }
-      };
-    }() )
+    }
   };
 
   // initialize!
