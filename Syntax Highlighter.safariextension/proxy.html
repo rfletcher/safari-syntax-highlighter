@@ -7,27 +7,10 @@
   <script type="text/javascript" src="lib/js-beautify/unpackers/javascriptobfuscator_unpacker.js"></script>
   <script type="text/javascript" src="lib/js-beautify/unpackers/p_a_c_k_e_r_unpacker.js"></script>
 
+  <script type="text/javascript" src="js/formatters.js"></script>
+  <script type="text/javascript" src="js/rpc.js"></script>
+
   <script type="text/javascript">
-    var RPC = {
-      /**
-       * get the extension's settings
-       */
-      getSettings: function() {
-        return {
-          sort_keys: safari.extension.settings.getItem( "sort_keys" )
-        };
-      },
-
-      /**
-       * reformat (pretty-print) the content
-       */
-      reformat: function( type, src ) {
-        switch( type ) {
-          case "javascript": return js_beautify( src );
-        }
-      }
-    };
-
     // listen for incoming messages and respond w/ calls to RPC methods
     safari.application.addEventListener( "message", function( e ) {
       if( RPC[e.name] ) {
