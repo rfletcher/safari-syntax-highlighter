@@ -105,15 +105,26 @@
 
       this.injectScript( "lib/SyntaxHighlighter/js/shCore.js", function() {
         this.injectScript( "lib/SyntaxHighlighter/js/brushes/" + type + ".js", function() {
-          var opts = {
-            gutter: false,
-            toolbar: false
+          var sh_opts = {
+            'auto-links':  true,
+            'class-name':  '',
+            collapse:      false,
+            'first-line':  1,
+            gutter:        true,
+            highlight:     null, // array of lines to highlight
+            'html-script': false, // tag soup?
+            'smart-tabs':  true,
+            'tab-size':    4,
+            toolbar:       false
           };
 
+          // ideally we'd just call SyntaxHighlighter.highlight(...) here, but
+          // Safari has let our window object go stale.  Use this hack to call
+          // it on the fresh window object instead.
           var script_el = document.createElement( "script" ),
               src_el = document.body.getElementsByTagName( "pre" )[0];
           script_el.type = "text/javascript";
-          script_el.innerHTML = 'SyntaxHighlighter.highlight(' + JSON.stringify( opts ) + ');';
+          script_el.innerHTML = 'SyntaxHighlighter.highlight(' + JSON.stringify( sh_opts ) + ');';
           document.body.insertBefore( script_el, src_el );
         } );
       } );
