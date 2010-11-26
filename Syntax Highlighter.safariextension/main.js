@@ -5,7 +5,7 @@
 ( function() {
   var settings = {}, extension = {
     /**
-     * attempt to reformat the current document as JSON
+     * attempt to reformat and/or highlight the current document
      *  TODO: examine the document's content-type (appears to be impossible)
      */
     init: function() {
@@ -15,6 +15,7 @@
         this.rpc( "getSettings", function( data ) {
           settings = data;
 
+          extension.reformat( type );
           extension.highlight( type );
         } );
       }
@@ -165,14 +166,25 @@
     },
 
     /**
+     * reformat (pretty-print) the document
+     */
+    reformat: function( type ) {
+      var src_el = document.body.getElementsByTagName( "pre" )[0];
+
+      this.rpc( "reformat", type, src_el.textContent, function( response ) {
+        if( response ) {
+          src_el.textContent = response;
+        }
+      } );
+    },
+
+    /**
      * call one of the extension's "global page" methods
      * usage:
      *    rpc( "method", function(){} );
      *    rpc( "method", "param1", ..., "paramN", function(){} );
      */
     rpc: function( method, callback ) {
-      callback = arguments[arguments.length - 1];
-
       var params = Array.prototype.slice.call( arguments, 1, arguments.length - 1 ),
 
       fn = function( e ) {
@@ -181,6 +193,8 @@
           safari.self.removeEventListener( "message", callback );
         }
       };
+
+      callback = arguments[arguments.length - 1];
 
       // listen for the response
       safari.self.addEventListener( "message", fn, false );

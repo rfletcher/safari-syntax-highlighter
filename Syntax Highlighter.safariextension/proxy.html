@@ -1,6 +1,12 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <!-- JS beautifier -->
+  <script type="text/javascript" src="lib/js-beautify/beautify.js"></script>
+  <script type="text/javascript" src="lib/js-beautify/unpackers/bookmarklet_unpacker.js"></script>
+  <script type="text/javascript" src="lib/js-beautify/unpackers/javascriptobfuscator_unpacker.js"></script>
+  <script type="text/javascript" src="lib/js-beautify/unpackers/p_a_c_k_e_r_unpacker.js"></script>
+
   <script type="text/javascript">
     var RPC = {
       /**
@@ -10,6 +16,15 @@
         return {
           sort_keys: safari.extension.settings.getItem( "sort_keys" )
         };
+      },
+
+      /**
+       * reformat (pretty-print) the content
+       */
+      reformat: function( type, src ) {
+        switch( type ) {
+          case "javascript": return js_beautify( src );
+        }
       }
     };
 
