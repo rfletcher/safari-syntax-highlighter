@@ -10,7 +10,7 @@
      */
     init: function() {
       var type = this.getDocumentType();
-window.name = "sadf";
+
       this.pendingScriptCount = 0;
 
       if( type && this.isTextDocument() ) {
