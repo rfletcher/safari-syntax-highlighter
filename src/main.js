@@ -16,7 +16,7 @@
           settings = data;
 
           extension.reformat( type );
-          extension.highlight( type );
+          // extension.highlight( type );
         } );
       }
     },
