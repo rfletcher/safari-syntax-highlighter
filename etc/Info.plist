@@ -44,7 +44,7 @@
 		</dict>
 	</dict>
 	<key>Update Manifest URL</key>
-	<string>https://github.com/rfletcher/safari-syntax-highlighter/raw/master/Update.plist</string>
+	<string>https://github.com/rfletcher/safari-syntax-highlighter/raw/latest/etc/Update.plist</string>
 	<key>Website</key>
 	<string>http://github.com/rfletcher/safari-syntax-highlighter</string>
 </dict>
