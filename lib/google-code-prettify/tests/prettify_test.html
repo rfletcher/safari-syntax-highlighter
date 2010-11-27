@@ -6,6 +6,8 @@
  onerror="alert('Error: failed to load ' + this.src)"></script>
 <script src="../src/lang-css.js" type="text/javascript"
  onerror="alert('Error: failed to load ' + this.src)"></script>
+<script src="../src/lang-go.js" type="text/javascript"
+ onerror="alert('Error: failed to load ' + this.src)"></script>
 <script src="../src/lang-hs.js" type="text/javascript"
  onerror="alert('Error: failed to load ' + this.src)"></script>
 <script src="../src/lang-lisp.js" type="text/javascript"
@@ -16,6 +18,8 @@
  onerror="alert('Error: failed to load ' + this.src)"></script>
 <script src="../src/lang-proto.js" type="text/javascript"
  onerror="alert('Error: failed to load ' + this.src)"></script>
+<script src="../src/lang-scala.js" type="text/javascript"
+ onerror="alert('Error: failed to load ' + this.src)"></script>
 <script src="../src/lang-sql.js" type="text/javascript"
  onerror="alert('Error: failed to load ' + this.src)"></script>
 <script src="../src/lang-wiki.js" type="text/javascript"
@@ -25,8 +29,6 @@
 <script src="../src/lang-vb.js" type="text/javascript"
  onerror="alert('Error: failed to load ' + this.src)"></script>
 <script src="../src/lang-yaml.js" type="text/javascript"
- onerror="alert('Error: failed to load ' + this.src)"></script>
-<script src="../src/lang-scala.js" type="text/javascript"
  onerror="alert('Error: failed to load ' + this.src)"></script>
 <script src="test_base.js" type="text/javascript"
  onerror="alert('Error: failed to load ' + this.src)"></script>
@@ -384,6 +386,57 @@ division = notreturn / not_a_regexp / 2;  // keyword suffix does not match
 &/foo/;
 
 extends = /extends/;
+</pre>
+
+<h1>Coffee</h1>
+<pre class="prettyprint lang-coffee" id="coffee">
+class Animal
+  constructor: (@name) ->
+  move: (meters, loc) ->
+    alert @name + " moved " + meters + "m."
+  travel: (path...) ->
+    for place in path
+      @move place.distance, place.location
+
+class Horse extends Animal
+  ###
+  @param name Horse name
+  @param jumper Jumping ability
+  ###
+  constructor: (name, jumper) ->
+    super name
+    @capable = jumper
+  step: ->
+    alert '''
+          Step,
+          step...
+          '''
+  jump: ->
+    @capable
+  move: (meters, where) ->
+    switch where
+      when "ground"
+        @step()
+        super meters
+      when "hurdle"
+        super meters if @jump()
+
+# Create horse
+tom = new Horse "Tommy", yes
+
+street =
+  location: "ground"
+  distance: 12
+car =
+  location: "hurdle"
+  distance: 2
+
+###
+Tell him to travel:
+1. through the street
+2. over the car
+###
+tom.travel street, car
 </pre>
 
 <h1>Perl</h1>
@@ -904,6 +957,10 @@ Not.A.Char = 'too long'  -- Don't barf.  Show that 't is a lexical error.
   in
     print_int(fib(10, 1, 1));;
 #endif
+
+let zed = 'z'
+
+let f' x' = x' + 1
 </pre>
 <p>Still TODO: handle nested <code>(* (* comments *) *)</code> properly.</p>
 
@@ -1226,6 +1283,20 @@ def act() {
     }
   }
 }
+</pre>
+
+<h1>Go mode</h1>
+<pre class="prettyprint lang-go" id="go">
+package main  /* Package of which this program is part. */
+
+import fmt "fmt"  // Package implementing formatted I/O.
+
+
+func main() {
+    fmt.Printf("Hello, world; or &#x039a;&#x03b1;&#x03bb;&#x03b7;&#x03bc;&#x03ad;&#x03c1;&#x03b1; &#x03ba;&#x03cc;&#x03c3;&#x03bc;&#x03b5;; or &#x3053;&#x3093;&#x306b;&#x3061;&#x306f; &#x4e16;&#x754c;\n")  // Semicolon inserted here
+}
+
+/* " */  "foo /* "  /*/  */
 </pre>
 </body>
 
@@ -2163,6 +2234,55 @@ var goldens = {
       '`END`PUN&amp;`END`STR/foo/`END`PUN;`END`PLN<br>' +
       '<br>' +
       'extends `END`PUN=`END`PLN `END`STR/extends/`END`PUN;`END'),
+  coffee: (
+      '`KWDclass`END`PLN `END`TYPAnimal`END`PLN<br>' +
+      '&nbsp; constructor`END`PUN:`END`PLN `END`PUN(`END`LIT@name`END`PUN)`END`PLN `END`PUN-&gt;`END`PLN<br>' +
+      '&nbsp; move`END`PUN:`END`PLN `END`PUN(`END`PLNmeters`END`PUN,`END`PLN loc`END`PUN)`END`PLN `END`PUN-&gt;`END`PLN<br>' +
+      '&nbsp; &nbsp; alert `END`LIT@name`END`PLN `END`PUN+`END`PLN `END`STR" moved "`END`PLN `END`PUN+`END`PLN meters `END`PUN+`END`PLN `END`STR"m."`END`PLN<br>' +
+      '&nbsp; travel`END`PUN:`END`PLN `END`PUN(`END`PLNpath`END`PUN...)`END`PLN `END`PUN-&gt;`END`PLN<br>' +
+      '&nbsp; &nbsp; `END`KWDfor`END`PLN place `END`KWDin`END`PLN path<br>' +
+      '&nbsp; &nbsp; &nbsp; `END`LIT@move`END`PLN place`END`PUN.`END`PLNdistance`END`PUN,`END`PLN place`END`PUN.`END`PLNlocation<br>' +
+      '<br>' +
+      '`END`KWDclass`END`PLN `END`TYPHorse`END`PLN `END`KWDextends`END`PLN `END`TYPAnimal`END`PLN<br>' +
+      '&nbsp; `END`COM###<br>' +
+      '&nbsp; @param name Horse name<br>' +
+      '&nbsp; @param jumper Jumping ability<br>' +
+      '&nbsp; ###`END`PLN<br>' +
+      '&nbsp; constructor`END`PUN:`END`PLN `END`PUN(`END`PLNname`END`PUN,`END`PLN jumper`END`PUN)`END`PLN `END`PUN-&gt;`END`PLN<br>' +
+      '&nbsp; &nbsp; `END`KWDsuper`END`PLN name<br>' +
+      '&nbsp; &nbsp; `END`LIT@capable`END`PLN `END`PUN=`END`PLN jumper<br>' +
+      '&nbsp; step`END`PUN:`END`PLN `END`PUN-&gt;`END`PLN<br>' +
+      '&nbsp; &nbsp; alert `END`STR\'\'\'<br>' +
+      '&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Step,<br>' +
+      '&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; step...<br>' +
+      '&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; \'\'\'`END`PLN<br>' +
+      '&nbsp; jump`END`PUN:`END`PLN `END`PUN-&gt;`END`PLN<br>' +
+      '&nbsp; &nbsp; `END`LIT@capable`END`PLN<br>' +
+      '&nbsp; move`END`PUN:`END`PLN `END`PUN(`END`PLNmeters`END`PUN,`END`PLN where`END`PUN)`END`PLN `END`PUN-&gt;`END`PLN<br>' +
+      '&nbsp; &nbsp; switch where<br>' +
+      '&nbsp; &nbsp; &nbsp; `END`KWDwhen`END`PLN `END`STR"ground"`END`PLN<br>' +
+      '&nbsp; &nbsp; &nbsp; &nbsp; `END`LIT@step`END`PUN()`END`PLN<br>' +
+      '&nbsp; &nbsp; &nbsp; &nbsp; `END`KWDsuper`END`PLN meters<br>' +
+      '&nbsp; &nbsp; &nbsp; `END`KWDwhen`END`PLN `END`STR"hurdle"`END`PLN<br>' +
+      '&nbsp; &nbsp; &nbsp; &nbsp; `END`KWDsuper`END`PLN meters `END`KWDif`END`PLN `END`LIT@jump`END`PUN()`END`PLN<br>' +
+      '<br>' +
+      '`END`COM# Create horse`END`PLN<br>' +
+      'tom `END`PUN=`END`PLN `END`KWDnew`END`PLN `END`TYPHorse`END`PLN `END`STR"Tommy"`END`PUN,`END`PLN `END`KWDyes`END`PLN<br>' +
+      '<br>' +
+      'street `END`PUN=`END`PLN<br>' +
+      '&nbsp; location`END`PUN:`END`PLN `END`STR"ground"`END`PLN<br>' +
+      '&nbsp; distance`END`PUN:`END`PLN `END`LIT12`END`PLN<br>' +
+      'car `END`PUN=`END`PLN<br>' +
+      '&nbsp; location`END`PUN:`END`PLN `END`STR"hurdle"`END`PLN<br>' +
+      '&nbsp; distance`END`PUN:`END`PLN `END`LIT2`END`PLN<br>' +
+      '<br>' +
+      '`END`COM###<br>' +
+      'Tell him to travel:<br>' +
+      '1. through the street<br>' +
+      '2. over the car<br>' +
+      '###`END`PLN<br>' +
+      'tom`END`PUN.`END`PLNtravel street`END`PUN,`END`PLN car`END'
+       ),
   issue14a: (
       '`COM//comment`END`PLN<br>' +
       '`END`KWDint`END`PLN main`END`PUN(`END`KWDint`END`PLN argc`END`PUN,`END' +
@@ -2429,7 +2549,11 @@ var goldens = {
       '&nbsp; &nbsp; print_int`END`PUN(`END`PLNfib`END`PUN(`END`LIT10`END' +
            '`PUN,`END`PLN `END`LIT1`END`PUN,`END`PLN `END`LIT1`END' +
            '`PUN));;`END`PLN<br>' +
-      '`END`COM#endif`END'),
+      '`END`COM#endif`END`PLN<br>' +
+      '<br>' +
+      '`END`KWDlet`END`PLN zed `END`PUN=`END`PLN `END`STR\'z\'`END`PLN<br>' +
+      '<br>' +
+      '`END`KWDlet`END`PLN f\' x\' `END`PUN=`END`PLN x\' `END`PUN+`END`PLN `END`LIT1`END'),
   issue42: (
       '`COM; -*- mode: lisp -*-`END`PLN<br>' +
       '<br>' +
@@ -2765,7 +2889,17 @@ var goldens = {
       '&nbsp; &nbsp; &nbsp; &nbsp; exit`END`PUN()`END`PLN<br>' +
       '&nbsp; &nbsp; `END`PUN}`END`PLN<br>' +
       '&nbsp; `END`PUN}`END`PLN<br>' +
-      '`END`PUN}`END'
+      '`END`PUN}`END',
+  go: '`PLNpackage main &nbsp;`END`COM/* Package of which this program is part. */`END`PLN<br>' +
+      '<br>' +
+      'import fmt "fmt" &nbsp;`END`COM// Package implementing formatted I/O.`END`PLN<br>' +
+      '<br>' +
+      '<br>' +
+      'func main() {<br>' +
+      '&nbsp; &nbsp; fmt.Printf("Hello, world; or \u039a\u03b1\u03bb\u03b7\u03bc\u03ad\u03c1\u03b1 \u03ba\u03cc\u03c3\u03bc\u03b5; or \u3053\u3093\u306b\u3061\u306f \u4e16\u754c\\n") &nbsp;`END`COM// Semicolon inserted here`END`PLN<br>' +
+      '}<br>' +
+      '<br>' +
+      '`END`COM/* " */`END`PLN &nbsp;"foo /* " &nbsp;`END`COM/*/ &nbsp;*/`END'
 };
 </script>
 
