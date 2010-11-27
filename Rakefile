@@ -8,8 +8,8 @@ task :default do
     "etc/Info.plist",
     "etc/Settings.plist",
     "src/*",
-    [ "lib/js-beautify/beautify.js", "lib/js-beautify" ],
-    [ "lib/js-beautify/unpackers/*", "lib/js-beautify/unpackers" ]
+    ["lib/js-beautify/beautify.js", "lib/js-beautify"],
+    ["lib/js-beautify/unpackers/*", "lib/js-beautify/unpackers"]
   ]
 
   assets.each do |glob|
