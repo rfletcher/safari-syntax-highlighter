@@ -9,7 +9,9 @@ task :default do
     "etc/Settings.plist",
     "src/*",
     ["lib/js-beautify/beautify.js", "lib/js-beautify"],
-    ["lib/js-beautify/unpackers/*", "lib/js-beautify/unpackers"]
+    ["lib/js-beautify/unpackers/*", "lib/js-beautify/unpackers"],
+    ["lib/google-code-prettify/src/prettify.*", "lib/google-code-prettify"],
+    ["lib/google-code-prettify/src/lang-*", "lib/google-code-prettify"]
   ]
 
   assets.each do |glob|
