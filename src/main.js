@@ -16,7 +16,6 @@
           settings = data;
 
           extension.reformat( type );
-          // extension.highlight( type );
         } );
       }
     },
@@ -89,36 +88,16 @@
     /**
      * syntax highlight the document
      */
-    highlight: function( type ) {
-      var sh_opts = {
-        "auto-links":  true,
-        "class-name":  "",
-        collapse:      false,
-        "first-line":  1,
-        gutter:        true,
-        highlight:     null, // array of lines to highlight
-        "html-script": false, // tag soup?
-        "smart-tabs":  true,
-        "tab-size":    4,
-        toolbar:       false
-      },
+    highlight: function() {
+      var src_el = document.body.getElementsByTagName( "pre" )[0];
 
-      src_el = document.body.getElementsByTagName( "pre" )[0];
-      src_el.className = "brush: " + type;
 
-      this.injectCSS( "lib/SyntaxHighlighter/css/shCore.css" );
-      this.injectCSS( "lib/SyntaxHighlighter/css/shThemeEclipse.css" );
-
-      this.injectScript( "lib/SyntaxHighlighter/js/shCore.js", function() {
-        this.injectScript( "lib/SyntaxHighlighter/js/brushes/" + type + ".js", function() {
-          // ideally we'd just call SyntaxHighlighter.highlight(...) here, but
-          // Safari has let our window object go stale.  Use this hack to call
-          // it on the fresh window object instead.
-          var script_el = document.createElement( "script" );
-          script_el.type = "text/javascript";
-          script_el.innerHTML = 'SyntaxHighlighter.highlight(' + JSON.stringify( sh_opts ) + ');';
-          document.body.insertBefore( script_el, src_el );
-        } );
+      this.rpc( "highlight", src_el.innerHTML, function( response ) {
+        if( response && response != src_el.innerHTML ) {
+          this.injectCSS( "lib/google-code-prettify/prettify.css" );
+          this.injectCSS( "main.css" );
+          src_el.innerHTML = response;
+        }
       } );
     },
 
@@ -131,27 +110,6 @@
       link_el.type = "text/css";
       link_el.rel = "stylesheet";
       document.body.appendChild( link_el );
-    },
-
-    /**
-     * include an external javascript file in the page
-     */
-    injectScript: function( src, onload ) {
-      var script_el = document.createElement( "script" ),
-          src_el = document.body.getElementsByTagName( "pre" )[0];
-
-      if( onload ) {
-        script_el.onload = ( function( context ) {
-          return function() {
-            onload.call( context );
-          };
-        }( this ) );
-      }
-
-      script_el.src = safari.extension.baseURI + src;
-      script_el.type = "text/javascript";
-
-      document.body.insertBefore( script_el, src_el );
     },
 
     /**
@@ -175,6 +133,7 @@
         if( response ) {
           src_el.textContent = response;
         }
+        extension.highlight();
       } );
     },
 

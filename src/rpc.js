@@ -9,7 +9,14 @@ var RPC = {
   },
 
   /**
-   * reformat (pretty-print) the content
+   * syntax highlight a string
+   */
+  highlight: function( src ) {
+    return prettyPrintOne( src, null, true );
+  },
+
+  /**
+   * reformat (pretty-print) a string
    */
   reformat: function( type, src ) {
     if( formatters[type] ) {

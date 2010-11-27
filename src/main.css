@@ -1,0 +1,22 @@
+body,
+pre {
+  margin: 0;
+}
+
+ol.linenums {
+  background-color: #f2f2f2;
+  margin: 0;
+  padding-left: 5.5em;
+}
+ol.linenums > li {
+  background-color: #fff;
+  border-left: 3px solid #e2e2e2;
+  list-style-type: decimal-leading-zero !important;
+  padding-left: 1em;
+}
+ol.linenums > li:first-child {
+  padding-top: 8px;
+}
+ol.linenums > li:last-child {
+  padding-bottom: 8px;
+}
